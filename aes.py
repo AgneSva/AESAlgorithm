@@ -1,13 +1,14 @@
 from tkinter import *
 from tkinter import ttk
 from Crypto.Util.Padding import pad, unpad
-import hashlib 
-import base64 
+import hashlib
+import base64
 import importlib
 from Crypto.Cipher import AES
 from Crypto import Random
 from hashlib import md5
 from Crypto.Random import get_random_bytes
+import binascii
 
 
 class AEScbc:
@@ -16,8 +17,9 @@ class AEScbc:
         self.key = md5(password).digest()
 
     def encrypt(self, data):
+        #inic.vector:
         vector = get_random_bytes(AES.block_size)
-        print(vector.hex())
+        #print(vector)
         encryption_cipher = AES.new(self.key, AES.MODE_CBC, vector)
         return vector + encryption_cipher.encrypt(pad(data,  AES.block_size))
 
@@ -25,7 +27,6 @@ class AEScbc:
         file_vector = data[:AES.block_size]
         decryption_cipher = AES.new(self.key, AES.MODE_CBC, file_vector)
         return unpad(decryption_cipher.decrypt(data[AES.block_size:]), AES.block_size)
-
 
 
 def clean():
@@ -52,35 +53,49 @@ def validate():
         msg = cipher.encrypt(s)
         print(msg.hex())
 
-        #decipher = AES.new(k.encode("utf-8"), AES.MODE_ECB)
-        #msg_dec = decipher.decrypt(msg)
-        #print(msg_dec)
+        # writing encrypted text to file
+        with open('data.txt', 'w') as f:
+            f.write(msg.hex())
 
-        ResultEntry.insert(0, msg.hex())
+        # showing the result:
+        with open('data.txt', 'r') as f:
+            ResultEntry.insert(0, f.read())
 
-# atsifravimas ECB
+        decipher = AES.new(k.encode("utf-8"), AES.MODE_ECB)
+        msg_dec = decipher.decrypt(msg)
+        print(msg_dec)
+
+    # atsifravimas ECB
     elif value == "2" and mode == "2":
         print("desifravimasECB")
-        
-        
+        decipher = AES.new(k.encode("utf-8"), AES.MODE_ECB)
+        msg_dec = decipher.decrypt(s)
+        print(msg_dec)
+        ResultEntry.insert(0, msg_dec)
         
 
-#sifravimas CBC
+        
+    # sifravimas CBC
     elif value == "1" and mode == "1":
         print("sifravimasCBC")
         msg = s.encode('utf-8')
         pwd = k
-    
-        encrypted = AEScbc(pwd).encrypt(msg)
-        print('Ciphertext:', encrypted.hex())
 
-#desifravimas CBC
+        encrypted = AEScbc(pwd).encrypt(msg)
+        #print('Ciphertext:', encrypted.hex())
+
+        # writing encrypted text to file
+        with open('data.txt', 'w') as f:
+            f.write(encrypted.hex())
+
+        # showing the result:
+        with open('data.txt', 'r') as f:
+            ResultEntry.insert(0, f.read())
+
+    # desifravimas CBC
     elif value == "2" and mode == "1":
         print("desifravimasCBC")
         
-        
-        
-
 
     else:
         print("An option must be selected")
@@ -139,4 +154,3 @@ button.grid(row=10, column=1)
 # size of the page
 master.geometry('400x400')
 master.mainloop()
-
