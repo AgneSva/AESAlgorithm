@@ -8,7 +8,7 @@ from Crypto.Cipher import AES
 from Crypto import Random
 from hashlib import md5
 from Crypto.Random import get_random_bytes
-import binascii
+from binascii import hexlify, unhexlify
 
 
 class AEScbc:
@@ -17,9 +17,9 @@ class AEScbc:
         self.key = md5(password).digest()
 
     def encrypt(self, data):
-        #inic.vector:
+        # inic.vector:
         vector = get_random_bytes(AES.block_size)
-        #print(vector)
+        # print(vector)
         encryption_cipher = AES.new(self.key, AES.MODE_CBC, vector)
         return vector + encryption_cipher.encrypt(pad(data,  AES.block_size))
 
@@ -72,9 +72,7 @@ def validate():
         msg_dec = decipher.decrypt(s)
         print(msg_dec)
         ResultEntry.insert(0, msg_dec)
-        
 
-        
     # sifravimas CBC
     elif value == "1" and mode == "1":
         print("sifravimasCBC")
@@ -82,8 +80,8 @@ def validate():
         pwd = k
 
         encrypted = AEScbc(pwd).encrypt(msg)
-        #print('Ciphertext:', encrypted.hex())
-
+     
+        
         # writing encrypted text to file
         with open('data.txt', 'w') as f:
             f.write(encrypted.hex())
@@ -95,7 +93,11 @@ def validate():
     # desifravimas CBC
     elif value == "2" and mode == "1":
         print("desifravimasCBC")
-        
+       
+        decrypted = AEScbc(k).decrypt(s).decode('utf-8')
+       
+        print(decrypted)
+    
 
     else:
         print("An option must be selected")
