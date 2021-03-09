@@ -19,7 +19,7 @@ class AEScbc:
     def encrypt(self, data):
         # inic.vector:
         vector = get_random_bytes(AES.block_size)
-        # print(vector)
+        print(vector)
         encryption_cipher = AES.new(self.key, AES.MODE_CBC, vector)
         return vector + encryption_cipher.encrypt(pad(data,  AES.block_size))
 
@@ -68,9 +68,10 @@ def validate():
     # atsifravimas ECB
     elif value == "2" and mode == "2":
         print("desifravimasECB")
-        decipher = AES.new(k.encode("utf-8"), AES.MODE_ECB)
-        msg_dec = decipher.decrypt(s)
-        print(msg_dec)
+    
+        decipher = AES.new(k, AES.MODE_ECB)
+        msg_dec=(decipher.decrypt(unhexlify(s)))
+        
         ResultEntry.insert(0, msg_dec)
 
     # sifravimas CBC
@@ -90,15 +91,14 @@ def validate():
         with open('data.txt', 'r') as f:
             ResultEntry.insert(0, f.read())
 
-    # desifravimas CBC
+    # atsifravimas CBC
     elif value == "2" and mode == "1":
         print("desifravimasCBC")
        
         decrypted = AEScbc(k).decrypt(s).decode('utf-8')
        
         print(decrypted)
-    
-
+     
     else:
         print("An option must be selected")
 
