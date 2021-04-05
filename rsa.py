@@ -9,14 +9,18 @@ import random
 Euclid's algorithm for determining the greatest common divisor
 Use iteration to make it faster for larger integers
 '''
+
+
 def gcd(a, b):
     while b != 0:
         a, b = b, a % b
     return a
 
+
 '''
 Euclid's extended algorithm for finding the multiplicative inverse of two numbers
 '''
+
 
 def multiplicative_inverse(e, phi):
     d = 0
@@ -101,23 +105,36 @@ def isPrime(num):
     else:
         return False
 
+
 def encrypt(pk, plaintext):
     key, n = pk
-    #Convert each letter in the plaintext to numbers based on the character using a^b mod m
-    #letter to ascii decimal
+    # Convert each letter in the plaintext to numbers based on the character using a^b mod m
+    # letter to ascii decimal
     cipher = [(ord(char) ** key) % n for char in plaintext]
+    print(cipher)
     return cipher
 
+
 def decrypt(pk, ciphertext):
-    #Unpack the key into its components
-    key, n = pk
-    #Generate the plaintext based on the ciphertext and key using a^b mod m
-    plain = [chr((char ** key) % n) for char in ciphertext]
-    #Return the array of bytes as a string
-    
+    # Unpack the key into its components
+    # convert into tuple
+    ts = eval(pk)
+
+    ciphertext = [int(s) for s in ciphertext.split(',')]
+    print(ciphertext)
+    key = int(ts[0])
+    n = int(ts[1])
+    print("key=", key, "n=", n)
+
+    # Generate the plaintext based on the ciphertext and key using a^b mod m
+    plain = [((char ** key) % n) for char in ciphertext]
+    print(plain)
+
     return plain
 
 # function for choices:
+
+
 def validate():
     # sifravimas ar desifravimas
     value = option.get()
@@ -126,7 +143,7 @@ def validate():
 
     if value == "1":
         print("sifravimas")
-        p = int(pEntry.get())   
+        p = int(pEntry.get())
         q = int(qEntry.get())
 
         # tikrinam ar pirminis
@@ -134,7 +151,6 @@ def validate():
 
             raise ValueError('Both numbers must be prime.')
 
-      
         public, private = generate_keypair(p, q)
         print(" public key is ", public,
               " and yprivate key is ", private)
@@ -145,7 +161,8 @@ def validate():
 
         encrypted_msg = encrypt(public, x)
         print(" encrypted message is: ")
-        print (''.join(map(lambda xi: str(xi), encrypted_msg)))
+
+        print(''.join(map(lambda xi: str(xi), encrypted_msg)))
 
         # rezultata i faila:
         with open('result.txt', 'w') as f:
@@ -157,13 +174,14 @@ def validate():
 
     elif value == "2":
         print("desifravimas")
-        #paimti public key is failo
+        # paimti public key is failo
         with open('data.txt', 'r') as f:
-            public=f.read()
-        
-  
-        
-        #print (decrypt(public, x))
+            public = f.read()
+
+        plain = decrypt(public, x)
+       
+
+        ResultEntry.insert(0, plain)
 
     else:
         print("An option must be selected")
